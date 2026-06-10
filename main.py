@@ -47,7 +47,8 @@ async def evaluate_answer(file: UploadFile = File(...)):
         
         image_bytes = await file.read()
         
-        genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+        # LOOKS SPECIFICALLY FOR THE EXAMINER KEY
+        genai.configure(api_key=os.environ.get("EXAMINER_API_KEY"))
         
         system_instruction = f"""
         You are an expert ICAI Examiner evaluating CA Intermediate Group 2 exam papers.
@@ -59,7 +60,6 @@ async def evaluate_answer(file: UploadFile = File(...)):
         Apply step-wise marking and check for precise technical vocabulary.
         """
         
-        # Uses fast/free model with proper system_instruction placement
         model = genai.GenerativeModel(
             'gemini-2.5-flash',
             system_instruction=system_instruction
@@ -82,7 +82,8 @@ async def evaluate_answer(file: UploadFile = File(...)):
 @app.post("/api/doubt-solver")
 async def solve_doubt(chat: ChatMessage):
     try:
-        genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+        # LOOKS SPECIFICALLY FOR THE TUTOR KEY
+        genai.configure(api_key=os.environ.get("TUTOR_API_KEY"))
         
         system_instruction = """
         You are "Professor ICAI AI," a distinguished, highly authoritative, and strict Chartered Accountant and veteran faculty member teaching CA Intermediate and CA Final courses. Your sole purpose is to resolve academic doubts regarding the ICAI syllabus.
@@ -103,7 +104,6 @@ async def solve_doubt(chat: ChatMessage):
         Break down your explanation into: Conceptual Definition, Technical Analysis, and Practical Exam Advice.
         """
         
-        # Uses fast/free model with proper system_instruction placement
         model = genai.GenerativeModel(
             'gemini-2.5-flash',
             system_instruction=system_instruction
