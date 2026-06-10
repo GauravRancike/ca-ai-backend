@@ -59,9 +59,9 @@ async def evaluate_answer(file: UploadFile = File(...)):
         Apply step-wise marking and check for precise technical vocabulary.
         """
         
-        # FIX: Placed system_instruction here
+        # Uses fast/free model with proper system_instruction placement
         model = genai.GenerativeModel(
-            'gemini-2.5-pro',
+            'gemini-2.5-flash',
             system_instruction=system_instruction
         )
         
@@ -103,9 +103,9 @@ async def solve_doubt(chat: ChatMessage):
         Break down your explanation into: Conceptual Definition, Technical Analysis, and Practical Exam Advice.
         """
         
-        # FIX: Placed system_instruction here
+        # Uses fast/free model with proper system_instruction placement
         model = genai.GenerativeModel(
-            'gemini-2.5-pro',
+            'gemini-2.5-flash',
             system_instruction=system_instruction
         )
         
