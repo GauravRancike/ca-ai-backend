@@ -48,7 +48,6 @@ async def evaluate_answer(file: UploadFile = File(...)):
         image_bytes = await file.read()
         
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-        model = genai.GenerativeModel('gemini-2.5-pro')
         
         system_instruction = f"""
         You are an expert ICAI Examiner evaluating CA Intermediate Group 2 exam papers.
@@ -60,14 +59,21 @@ async def evaluate_answer(file: UploadFile = File(...)):
         Apply step-wise marking and check for precise technical vocabulary.
         """
         
+        # FIX: Placed system_instruction here
+        model = genai.GenerativeModel(
+            'gemini-2.5-pro',
+            system_instruction=system_instruction
+        )
+        
         response = model.generate_content(
-            contents=[{"mime_type": file.content_type, "data": image_bytes}, system_instruction],
+            contents=[{"mime_type": file.content_type, "data": image_bytes}],
             generation_config={"response_mime_type": "application/json", "response_schema": ICAIEvaluationReport}
         )
         
         return json.loads(response.text)
         
     except Exception as e:
+        print(f"Examiner Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # ==========================================
@@ -77,7 +83,6 @@ async def evaluate_answer(file: UploadFile = File(...)):
 async def solve_doubt(chat: ChatMessage):
     try:
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-        model = genai.GenerativeModel('gemini-2.5-pro')
         
         system_instruction = """
         You are "Professor ICAI AI," a distinguished, highly authoritative, and strict Chartered Accountant and veteran faculty member teaching CA Intermediate and CA Final courses. Your sole purpose is to resolve academic doubts regarding the ICAI syllabus.
@@ -98,10 +103,15 @@ async def solve_doubt(chat: ChatMessage):
         Break down your explanation into: Conceptual Definition, Technical Analysis, and Practical Exam Advice.
         """
         
+        # FIX: Placed system_instruction here
+        model = genai.GenerativeModel(
+            'gemini-2.5-pro',
+            system_instruction=system_instruction
+        )
+        
         response = model.generate_content(
             contents=chat.message,
             generation_config={
-                "system_instruction": system_instruction,
                 "temperature": 0.2
             }
         )
@@ -109,4 +119,5 @@ async def solve_doubt(chat: ChatMessage):
         return {"response": response.text}
         
     except Exception as e:
+        print(f"Guru Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
